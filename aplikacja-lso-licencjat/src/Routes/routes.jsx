@@ -1,5 +1,5 @@
-import { LoginPage } from '../LoginPage/src/LoginPage';
-import { HomePage } from '../HomePage/src/HomePage';
+import { LoginPage } from '../LoginPage/src/LoginPage.jsx';
+import { HomePage } from '../HomePage/src/HomePage.jsx';
 import ErrorPage from './ErrorPage';
 
 const routes = [

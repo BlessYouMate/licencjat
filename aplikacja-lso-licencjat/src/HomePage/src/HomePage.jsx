@@ -1,7 +1,62 @@
 import { Link } from "react-router-dom"
 import styles from "../styles/HomePage.module.css"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
+
 
 export function HomePage(){
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect( () => {
+        const checkLoginStatus = async () =>{
+            try{
+                const response = await fetch("http://localhost:3000/",
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+                if(response.ok){
+                    setIsLoggedIn(true);
+                    
+                }
+                else{
+                    setIsLoggedIn(false);
+                    navigate("/login");
+                }
+            }
+            catch(err){
+                setIsLoggedIn(false);
+                console.log(err);
+                navigate("/login");
+            }
+        };
+
+        checkLoginStatus();
+    }, [navigate] )
+
+    if(!isLoggedIn){
+        return ( 
+            <div>Loading...</div>
+        )
+    }
+
+    const handleLogout = async () => {
+        try{
+            await fetch("http://localhost:3000/logout", {
+                method: "POST",
+                credentials: "include",
+            })
+
+            setIsLoggedIn(false);
+            navigate("/login");
+        }
+        catch(err){
+            console.log("Logout error: ", err);
+        }
+    }
+
     return (
         <>
         <div className={styles.background}></div>
@@ -10,10 +65,17 @@ export function HomePage(){
                 <div className={styles.logo}></div>
                 <h1 className={styles.header}>Króluj nam Chryste!</h1>
                 <div className={styles.nav_icons}>
-                    <img src="\src\assets\profile_icon.png" className={styles.nav_icon} alt="Profile" />
-                    <img src="src\assets\setting_icon.png" className={styles.nav_icon} alt="Settings" />
-                    <img src="src\assets\notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
+                    <button className={styles.nav_button} onClick={handleLogout}>
+                        <img src="/src/assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
+                    </button>
+                    <button className={styles.nav_button} >
+                        <img src="/src/assets/setting_icon.png" className={styles.nav_icon} alt="Settings" />
+                    </button>
+                    <button className={styles.nav_button} >
+                        <img src="/src/assets/notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
+                    </button>
                 </div>
+
             </div>
             <div className={styles.main_content}> 
                 <div className={styles.cards}>
