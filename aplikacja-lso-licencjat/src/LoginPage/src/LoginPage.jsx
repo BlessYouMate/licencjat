@@ -14,7 +14,7 @@ export function LoginPage(){
     const handleLogin = async (e) =>{
         e.preventDefault();
         try{
-            const response = await fetch("http://localhost:3000/login",
+            const response = await fetch("https://licencjat-production.up.railway.app/login",
                 {
                     method: "POST",
                     headers: {

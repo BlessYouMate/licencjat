@@ -11,7 +11,7 @@ export function HomePage(){
     useEffect( () => {
         const checkLoginStatus = async () =>{
             try{
-                const response = await fetch("http://localhost:3000/",
+                const response = await fetch("https://licencjat-production.up.railway.app/",
                     {
                         method: "GET",
                         credentials: "include",
@@ -44,7 +44,7 @@ export function HomePage(){
 
     const handleLogout = async () => {
         try{
-            await fetch("http://localhost:3000/logout", {
+            await fetch("https://licencjat-production.up.railway.app/logout", {
                 method: "POST",
                 credentials: "include",
             })
