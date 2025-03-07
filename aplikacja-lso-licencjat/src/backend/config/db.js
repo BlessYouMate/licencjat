@@ -6,11 +6,8 @@ dotenv.config({ path: './.env' });
 const { Pool } = pkg
 
 const pool = new Pool({
-    user: process.env.DB_USER,          // Twój użytkownik PostgreSQL (np. postgres)
-    host: process.env.DB_HOST,          // Zwykle localhost
-    database: process.env.DB_NAME,      // Nazwa bazy danych (np. lso_db)
-    password: process.env.DB_PASSWORD,  // Hasło do bazy
-    port: process.env.DB_PORT,  // Port (domyślnie 5432)
+    connectionString: process.env.DATABASE_URL, 
+    ssl: { rejectUnauthorized: false } // Railway wymaga SSL
 });
 
 const createTables = async () => {
