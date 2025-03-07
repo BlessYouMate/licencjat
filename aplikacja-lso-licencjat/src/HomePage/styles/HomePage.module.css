@@ -82,6 +82,7 @@ NAVIGATION
 
 
 
+
 /* 
 
 MAIN CONTENT
@@ -161,4 +162,214 @@ h2{
 
 .calendar{
     width: 115px;
+}
+
+
+/* 
+
+MEDIA QUERY
+
+*/
+
+/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280+px */
+
+@media only screen and (max-width: 480px) {
+    .cards{
+        display: flex;
+        flex-direction: column;
+        
+    }
+
+    .card{
+        font-size: small;
+        height: 20%;
+    }
+
+    .main_icon{
+        width: 80px;
+    }
+
+    .header{
+        font-size: 20px;
+        left: 60%;
+        width: fit-content;
+    }
+
+    .logo{
+        width: 60px;
+    }
+}
+
+
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    .cards{
+        display: flex;
+        flex-direction: column;
+    }
+
+    
+
+    .card{
+        font-size: medium;
+        height: 20%;
+    }
+
+    .main_icon{
+        width: 100px;
+    }
+
+    .header{
+        font-size: 25px;
+    }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1279px) {
+    .cards{
+        display: flex;
+        flex-direction: column;
+        
+    }
+
+    .card{
+        font-size: large;
+        height: 20%;
+    }
+
+    .main_icon{
+        width: 110px;
+    }
+
+    .header{
+        font-size: 30px;
+    }
+}
+
+@media only screen and (min-width: 1280px) and (max-width: 1625px) {
+    .card{
+        font-size: large;
+    }
+}
+
+
+
+@media only screen and (min-width: 1626px) {
+    .card{
+        font-size: x-large;
+    }
+
+    .header{
+        font-size: 50px;
+    }
+}
+
+
+
+/* general case for landscape */
+
+@media only screen and (max-height: 750px) and (orientation: landscape) {
+    .cards {
+        max-height: 60vh; 
+        overflow-y: auto;
+        gap: 3vw;
+    }
+
+    .card{
+        min-height: fit-content;
+       padding: 2vw;
+    }
+}
+
+/* general case for NOT landscape */
+
+@media only screen and (max-height: 750px)   {
+
+    
+    .cards {
+        display: flex;
+        flex-direction: column;
+
+        max-height: 60vh; 
+        overflow-y: auto;
+        gap: 3vw;
+    }
+
+    .card{
+        min-height: fit-content;
+        padding: 2vw;
+    }
+}
+
+
+
+
+/* hamburger menu */
+
+
+
+.open_sidebar, .close_sidebar {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.sidebar_active{
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+    
+
+    .nav_icons {
+        
+       
+        flex-direction: column;
+        align-items: center;
+        
+        position: fixed;
+        z-index: 1000;
+
+        top: 0;
+        right: -100%;
+        transition: .5s ease-in;
+        margin: 0;
+
+        padding-top: 15vh;
+        height: 100%;
+        width: 30%;
+        background-color: #fdcc70b7;
+        border: 1px solid black;
+        backdrop-filter: blur(2px);
+    }
+
+    .open_sidebar {
+        display: block;
+        width: 40px;
+        height: 40px;
+        background: url("../../assets/burger-bar.png");
+        background-size: contain;
+    }
+
+    .close_sidebar{
+        display: block;
+
+        position: absolute;
+        top: 5%;
+        align-self: flex-start;
+        margin-left: 5%;
+
+        width: 40px;
+        height: 40px;
+        background: url("../../assets/close.png");
+        background-size: contain;
+       
+    }
+
+    .sidebar_active:checked ~ .nav_icons{
+        right: 0;
+        transition: .5s ease-out;
+    }
+
+    
 }

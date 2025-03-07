@@ -82,7 +82,6 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
 
     try{
-        // res.clearCookie("token");
         res.clearCookie("jwt");
         res.status(200).json({message: "Wylogowano"})
     }
@@ -90,8 +89,6 @@ const logout = async (req, res) => {
         console.log("logout error: ", err);
         res.status(500).json({error: "Błąd serwera"});
     }
-    
-    
 }
 
 export {register, login, logout};
