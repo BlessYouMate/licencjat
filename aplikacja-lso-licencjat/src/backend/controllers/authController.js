@@ -66,12 +66,12 @@ const login = async (req, res) => {
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: true,
-            samSite: "Strict",
+            sameSite: "Strict",
             maxAge: 30 * 60 * 1000
         });
 
 
-        res.status(201).json({message: "Udało sie zalogować!" });
+        res.status(200).json({message: "Udało się zalogować!" });
     }
     catch(err){
         console.log("login error ", err);
