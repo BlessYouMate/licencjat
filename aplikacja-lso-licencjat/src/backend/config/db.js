@@ -5,12 +5,10 @@ dotenv.config({ path: './.env' });
 
 const { Pool } = pkg
 
+const connectionString = "postgresql://postgres:ZDwgSgYVOZOCyeTUcPUgDIcrIxGYtHJr@postgres.railway.internal:5432/railway"
+
 const pool = new Pool({
-    user: process.env.DB_USER,          // Twój użytkownik PostgreSQL (np. postgres)
-    host: process.env.DB_HOST,          // Zwykle localhost
-    database: process.env.DB_NAME,      // Nazwa bazy danych (np. lso_db)
-    password: process.env.DB_PASSWORD,  // Hasło do bazy
-    port: process.env.DB_PORT,  // Port (domyślnie 5432)
+    connectionString
 });
 
 const createTables = async () => {
