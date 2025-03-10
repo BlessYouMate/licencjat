@@ -68,13 +68,13 @@ export function HomePage() {
                                
                             </label>
                             <button className={styles.nav_button} onClick={handleLogout}>
-                                <img src="../../assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
+                                <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
                             </button>
                             <a href="" className={styles.nav_button}>
-                                <img src="../../assets/setting_icon.png" className={styles.nav_icon} alt="Settings" />
+                                <img src="/homepage_assets/setting_icon.png" className={styles.nav_icon} alt="Settings" />
                             </a>
                             <button className={styles.nav_button}>
-                                <img src="../../assets/notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
+                                <img src="/homepage_assets/notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
                             </button>
                         </div>
                    </nav>
@@ -84,19 +84,19 @@ export function HomePage() {
                     <div className={styles.cards}>
                         <div className={`${styles.card} ${styles.duty_calendar_card}`}>
                             <h2>Kalendarz i dyżury</h2>
-                            <img src="../../assets/duty.png" className={`${styles.main_icon} ${styles.duty}`} alt="Duty" />
+                            <img src="/homepage_assets/duty.png" className={`${styles.main_icon} ${styles.duty}`} alt="Duty" />
                         </div>
                         <div className={`${styles.card} ${styles.attendance_card}`}>
                             <h2>Obecność i ranking</h2>
-                            <img src="../../assets/podium.png" className={`${styles.main_icon} ${styles.podium}`} alt="Podium" />
+                            <img src="/homepage_assets/podium.png" className={`${styles.main_icon} ${styles.podium}`} alt="Podium" />
                         </div>
                         <div className={`${styles.card} ${styles.liturgical_calendar_card}`}>
                             <h2>Kalendarz liturgiczny</h2>
-                            <img src="../../assets/calendar.png" className={`${styles.main_icon} ${styles.calendar}`} alt="Calendar" />
+                            <img src="/homepage_assets/calendar.png" className={`${styles.main_icon} ${styles.calendar}`} alt="Calendar" />
                         </div>
                         <div className={`${styles.card} ${styles.bulletin_board_card}`}>
                             <h2>Tablica ogłoszeń</h2>
-                            <img src="../../assets/news.png" className={`${styles.main_icon} ${styles.news}`} alt="News" />
+                            <img src="/homepage_assets/news.png" className={`${styles.main_icon} ${styles.news}`} alt="News" />
                         </div>
                     </div>
                 </div>

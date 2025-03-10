@@ -45,7 +45,7 @@ NAVIGATION
 }
 
 .logo{
-    background: url("../../assets/logo.png") no-repeat center center;
+    background: url("/homepage_assets/logo.png") no-repeat center center;
     background-size: contain;
     width: 100px;
     height: 100px;
