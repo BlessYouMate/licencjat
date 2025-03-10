@@ -11,7 +11,7 @@ dotenv.config({ path: './.env' });
 
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://client-production-40ad.up.railway.app',
     methods: 'GET, POST, PUT, DELETE, OPTIONS',
     credentials: true,
 }))
