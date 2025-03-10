@@ -10,7 +10,7 @@ export function HomePage() {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await fetch("http://localhost:3000/", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -36,7 +36,7 @@ export function HomePage() {
 
     const handleLogout = async () => {
         try {
-            await fetch("http://localhost:3000/logout", {
+            await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
                 method: "POST",
                 credentials: "include",
             });
