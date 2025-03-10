@@ -73,9 +73,9 @@ const login = async (req, res) => {
 
         res.status(201).json({message: "Udało sie zalogować!" });
     }
-    catch(err){
-        console.log("login error ", err);
-        res.status(500).json({error: "Błąd serwera"});
+    catch(err) {
+        console.error("login error:", err.message || err);  
+        res.status(500).json({ error: "Błąd serwera" });
     }
 }
 
