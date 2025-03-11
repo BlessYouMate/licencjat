@@ -10,8 +10,14 @@ import authRouter from './routes/authRouter.js';
 dotenv.config({ path: './.env' });
 
 const app = express();
+
+const allowedOrigins = [
+    'https://client-production-40ad.up.railway.app',
+    'http://localhost:5173',
+]
+
 app.use(cors({
-    origin: 'https://client-production-40ad.up.railway.app',
+    origin: allowedOrigins,
     methods: 'GET, POST, PUT, DELETE, OPTIONS',
     credentials: true,
 }))
