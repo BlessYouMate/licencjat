@@ -63,16 +63,16 @@ export function HomePage() {
                         <label htmlFor="sidebar_active" className={styles.open_sidebar}>
                         </label>
 
-                        <div className={`${styles.nav_icons}`}>
+                        <div className={styles.nav_icons}>
                             <label htmlFor="sidebar_active"  className={styles.close_sidebar}>
                                
                             </label>
                             <button className={styles.nav_button} onClick={handleLogout}>
                                 <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
                             </button>
-                            <a href="" className={styles.nav_button}>
+                            <button className={styles.nav_button}>
                                 <img src="/homepage_assets/setting_icon.png" className={styles.nav_icon} alt="Settings" />
-                            </a>
+                            </button>
                             <button className={styles.nav_button}>
                                 <img src="/homepage_assets/notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
                             </button>
@@ -82,7 +82,7 @@ export function HomePage() {
                 </div>
                 <div className={styles.main_content}>
                     <div className={styles.cards}>
-                        <div className={`${styles.card} ${styles.duty_calendar_card}`}>
+                        <div className={`${styles.card} ${styles.duty_calendar_card}`} onClick={() => {navigate("/duty")}}>
                             <h2>Kalendarz i dyżury</h2>
                             <img src="/homepage_assets/duty.png" className={`${styles.main_icon} ${styles.duty}`} alt="Duty" />
                         </div>

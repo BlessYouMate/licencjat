@@ -1,0 +1,12 @@
+.fc-toolbar-title {
+   display: flex;
+   flex-direction: row;
+   width: fit-content;
+}
+
+.fc-day-sun{
+    background-color: rgb(255, 235, 235) ;
+}
+
+
+
