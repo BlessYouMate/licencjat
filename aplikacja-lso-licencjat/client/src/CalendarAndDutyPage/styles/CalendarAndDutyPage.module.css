@@ -12,8 +12,6 @@
 }
 
 .main_container {
-    
-
     display: grid;
     grid-template-rows: 1fr 5px 12fr; /* Added a row for <hr> (5px thick) */
     grid-template-columns: 5fr 1fr;
@@ -59,7 +57,7 @@ HEADER
 }
 
 .home_button:hover{
-    background-color: var(--button-hover);
+    background-color: var(--button-hover-strong);
 }
 
 .admin_button{
@@ -151,7 +149,7 @@ SIDEBAR
 }
 
 .change_duty_button:hover{
-    background-color: var(--button-hover);
+    background-color: var(--button-hover-strong);
 }
 
 .most_recent_assists {
@@ -216,6 +214,7 @@ SIDEBAR
 CALENDAR 
 
 Height of the actual calendar is controlled by his height property in jsx file
+Custom calendar styles are in calendar.css file
 
 */
 
@@ -235,5 +234,109 @@ Height of the actual calendar is controlled by his height property in jsx file
     -webkit-box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.12);
     -moz-box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.12);
     box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.12);
+}
+
+
+/* 
+
+MEDIAQUERY
+
+*/
+
+/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280-1625px 1625+px*/
+
+@media only screen and (max-width: 480px) {
+
+    .main_container{
+        display: block;
+    }
+
+    .header{
+        display: flex;
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .home_icon{
+        width: 45px;
+        height: 45px;
+    }
+
+    .home_button{
+        margin: 2%;
+        padding: 0;
+        
+    }
+
+    .upcoming_bar{
+        display: flex;
+        flex-direction: column;
+
+        align-items: flex-start;
+        gap: 8px;
+
+        margin-left: 2%;
+        width: 98%;
+    }
+
+    .header .admin_button{
+        display: none;
+    }
+
+    .line{
+        display: none;
+    }
+
+    .side_bar{
+        display: none;
+    }
+
+    
+}
+
+
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1279px) {
+    
+}
+
+@media only screen and (min-width: 1280px) and (max-width: 1625px) {
+    
+}
+
+@media only screen and (min-width: 1626px) {
+   
+}
+
+
+
+/* general case for landscape */
+
+@media only screen and (max-height: 750px) and (orientation: landscape) {
+   
+}
+
+/* general case for NOT landscape */
+
+@media only screen and (max-height: 750px)   {
+
+    
+    
+}
+
+
+/* hamburger menu */
+
+
+
+@media (max-width: 768px) {
+    
+    
+
+    
 }
 

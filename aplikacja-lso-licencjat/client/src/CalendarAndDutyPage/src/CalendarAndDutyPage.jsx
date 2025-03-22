@@ -7,13 +7,19 @@ import plLocale from '@fullcalendar/core/locales/pl'; // Dodanie lokalizacji PL
 
 import styles from "../styles/CalendarAndDutyPage.module.css"
 import "../styles/calendar.css"
-
+import { useNavigate } from 'react-router-dom';
 
 
 export function CalendarAndDutyPage(){
 
+    const navigate = useNavigate();
+
     const handleDateClick = (info) => {
         alert(`Kliknięto na datę: ${info.dateStr}`);
+    };
+
+    const handleHomeButton = (info) => {
+        navigate("/");
     };
 
     
@@ -22,7 +28,7 @@ export function CalendarAndDutyPage(){
         <div className={styles.main_container}>
             <div className={styles.header}>
                 <button className={styles.home_button}>
-                    <img src='/calendar_and_duty_assets/home.png' className={styles.home_icon}></img>
+                    <img src='/calendar_and_duty_assets/home.png' className={styles.home_icon} onClick={handleHomeButton}></img>
                 </button>
                 <div className={styles.upcoming_bar}>
                     <div className={`${styles.upcomin_duty, styles.upcoming_item}`}>

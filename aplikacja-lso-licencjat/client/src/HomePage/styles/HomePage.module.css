@@ -171,7 +171,7 @@ MEDIA QUERY
 
 */
 
-/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280+px */
+/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280-1625px 1625+px*/
 
 @media only screen and (max-width: 480px) {
     .cards{
