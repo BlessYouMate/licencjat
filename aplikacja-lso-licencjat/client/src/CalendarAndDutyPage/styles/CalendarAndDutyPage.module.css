@@ -340,7 +340,7 @@ MEDIAQUERY
         right: 15px;
         width: 40px;
         height: 40px;
-        background: url("calendar_and_duty_assets/burger-bar.png");
+        background: url("/calendar_and_duty_assets/burger-bar.png");
         background-size: contain;
     }
 
@@ -358,7 +358,7 @@ MEDIAQUERY
 
         width: 40px;
         height: 40px;
-        background: url("calendar_and_duty_assets/close.png");
+        background: url("/calendar_and_duty_assets/close.png");
         background-size: contain;
        
     }
