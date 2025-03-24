@@ -9,14 +9,12 @@
 }
 
 
-.fc-toolbar-chunk{
-    border: 1px solid red;
 
-}
 
 @media only screen and (max-width: 480px) {
-    .fc-header-toolbar{
-        
+    .fc-toolbar-chunk{
+        font-size: 90%;
+    
     }
 
 }

@@ -13,7 +13,7 @@
 
 .main_container {
     display: grid;
-    grid-template-rows: 1fr 5px 12fr; /* Added a row for <hr> (5px thick) */
+    grid-template-rows: 1fr 5px 12fr;
     grid-template-columns: 5fr 1fr;
     grid-template-areas: 
         "header side_bar"
@@ -60,14 +60,18 @@ HEADER
     background-color: var(--button-hover-strong);
 }
 
-.admin_button{
+.admin_button_sidebar{
+    display: none;
+}
+
+.admin_button_header{
     margin-right: 5%;
     border: none;
     background-color: var(--background);
     
 }
 
-.admin_button:hover{
+.admin_button_header:hover{
     filter: brightness(110%)
 }
 
@@ -236,6 +240,22 @@ Custom calendar styles are in calendar.css file
     box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.12);
 }
 
+/* hamburger menu */
+
+
+
+.open_sidebar, .close_sidebar {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.sidebar_active{
+    display: none;
+}
+
+
 
 /* 
 
@@ -243,9 +263,14 @@ MEDIAQUERY
 
 */
 
-/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280-1625px 1625+px*/
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 1279px) {
+
+    /* 
+    
+    HEADER
+
+    */
 
     .main_container{
         display: block;
@@ -259,13 +284,13 @@ MEDIAQUERY
     }
 
     .home_icon{
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
     }
 
     .home_button{
         margin: 2%;
-        padding: 0;
+        padding: 1%;
         
     }
 
@@ -280,7 +305,7 @@ MEDIAQUERY
         width: 98%;
     }
 
-    .header .admin_button{
+    .header .admin_button_header{
         display: none;
     }
 
@@ -288,55 +313,91 @@ MEDIAQUERY
         display: none;
     }
 
+
+    /* 
+    
+    SIDEBAR
+    
+    */
+
     .side_bar{
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+
+        right: -100%;
+        transition: .5s ease-in;
+
+        width: 60%;
+        height: 100%;
+        background-color: var(--background);
+    }
+
+    .open_sidebar {
+        display: block;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background: url("homepage_assets/burger-bar.png");
+        background-size: contain;
+    }
+
+    .close_and_admin{
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .close_sidebar{
+        display: block;
+        
+        margin-left: 5%;
+        margin-top: 5%;
+
+        width: 40px;
+        height: 40px;
+        background: url("homepage_assets/close.png");
+        background-size: contain;
+       
+    }
+
+    .admin_button_sidebar{
+        display: block;
+        margin-right: 5%;
+        margin-top: 5%;
+        border: none;
+        background-color: var(--background);
+    }
+
+    .admin_button_sidebar:hover{
+        filter: brightness(110%)
+    }
+
+    .nav_icon{
+        width: 45px;
+        height: 45px;
+    }
+
+    .change_duty_button{
+        font-size: large;
+    }
+    
+    .sidebar_active:checked ~ .side_bar{
+        
+        right: 0;
+        transition: .5s ease-out;
+        
+    }
+
+    .sidebar_active:checked ~ .open_sidebar{
         display: none;
     }
 
+
+
     
 }
 
-
-@media only screen and (min-width: 481px) and (max-width: 768px) {
-    
-}
-
-@media only screen and (min-width: 769px) and (max-width: 1279px) {
-    
-}
-
-@media only screen and (min-width: 1280px) and (max-width: 1625px) {
-    
-}
-
-@media only screen and (min-width: 1626px) {
-   
-}
-
-
-
-/* general case for landscape */
-
-@media only screen and (max-height: 750px) and (orientation: landscape) {
-   
-}
-
-/* general case for NOT landscape */
-
-@media only screen and (max-height: 750px)   {
-
-    
-    
-}
-
-
-/* hamburger menu */
-
-
-
-@media (max-width: 768px) {
-    
-    
-
-    
-}
 

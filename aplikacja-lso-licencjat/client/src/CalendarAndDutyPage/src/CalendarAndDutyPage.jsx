@@ -8,24 +8,45 @@ import plLocale from '@fullcalendar/core/locales/pl'; // Dodanie lokalizacji PL
 import styles from "../styles/CalendarAndDutyPage.module.css"
 import "../styles/calendar.css"
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 
 export function CalendarAndDutyPage(){
-
     const navigate = useNavigate();
 
-    const handleDateClick = (info) => {
-        alert(`Kliknięto na datę: ${info.dateStr}`);
-    };
+    const [calendarView, setCalendarView] = useState(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
+    const [calendarToolbar, setCalendarToolbar] = useState({});
+    const [calendarKey, setCalendarKey] = useState(true); // Klucz wymuszający ponowny render
 
     const handleHomeButton = (info) => {
         navigate("/");
     };
 
+    useEffect(() => {
+        const updateView = () => {
+            if (window.innerWidth < 768) { 
+                setCalendarView('timeGridDay');
+                setCalendarToolbar({ left: 'prev,next today', center: 'title', right: '' });
+            } else {
+                setCalendarView('timeGridWeek');
+                setCalendarToolbar({ left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' });
+            }
+            setCalendarKey(prevKey => prevKey + 1); // Wymusza ponowny render kalendarza
+        };
+
+        updateView(); // Ustawienie początkowego widoku
+        window.addEventListener('resize', updateView); // Nasłuchujemy zmiany szerokości ekranu
+
+        return () => window.removeEventListener('resize', updateView); // Czyszczenie event listenera
+    }, []);
+
     
     return(
         <>
         <div className={styles.main_container}>
+            <input type="checkbox" id="sidebar_active" className={styles.sidebar_active}></input>
+            <label htmlFor="sidebar_active" className={styles.open_sidebar}></label>
+
             <div className={styles.header}>
                 <button className={styles.home_button}>
                     <img src='/calendar_and_duty_assets/home.png' className={styles.home_icon} onClick={handleHomeButton}></img>
@@ -41,7 +62,7 @@ export function CalendarAndDutyPage(){
                         Najbliższe święto:  25 Marca 2025 Wielki Piątek
                     </div>
                 </div>
-                <button className={styles.admin_button}>
+                <button className={styles.admin_button_header}>
                     <img src='/calendar_and_duty_assets/crown.png' className={styles.admin_icon}></img>
                 </button>
                 
@@ -51,6 +72,15 @@ export function CalendarAndDutyPage(){
             <hr className={styles.line}></hr>
             
             <div className={styles.side_bar}>
+                <div className={styles.close_and_admin}>
+                    <label htmlFor="sidebar_active"  className={styles.close_sidebar}>   
+                    </label>
+                    <button className={styles.admin_button_sidebar}>
+                        <img src='/calendar_and_duty_assets/crown.png' className={styles.admin_icon}></img>
+                    </button>
+                </div>
+                
+
                 <div className={styles.nav_buttons}>
                     <button className={styles.nav_button}>
                         <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
@@ -96,28 +126,25 @@ export function CalendarAndDutyPage(){
             <div className={styles.calendar_container}>
 
                 <FullCalendar 
-                height="80vh"
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView='timeGridWeek'
-                headerToolbar={{
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'timeGridWeek,timeGridDay'
-                }}
+                    key={calendarKey}
+                    height="80vh"
+                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                    initialView={calendarView}
+                    headerToolbar={calendarToolbar}
 
-                titleFormat={{
-                    year: 'numeric',
-                    month: "long",
-                    day: "numeric"
-                }}
+                    titleFormat={{
+                        year: 'numeric',
+                        month: "long",
+                        day: "numeric"
+                    }}
 
-                events={[
-                    { id: '1', title: 'Msza św. poranna', start: '2025-03-14T08:00:00', end: '2025-03-14T09:00:00' },
-                ]}
-                dateClick={handleDateClick}
-                editable={true}
-                selectable={true}
-                locale={plLocale}
+                    events={[
+                        
+                    ]}
+
+                    editable={true}
+                    selectable={true}
+                    locale={plLocale}
                 
                 />
                 

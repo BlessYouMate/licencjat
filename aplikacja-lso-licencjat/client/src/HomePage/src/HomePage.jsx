@@ -64,8 +64,7 @@ export function HomePage() {
                         </label>
 
                         <div className={styles.nav_icons}>
-                            <label htmlFor="sidebar_active"  className={styles.close_sidebar}>
-                               
+                            <label htmlFor="sidebar_active"  className={styles.close_sidebar}>   
                             </label>
                             <button className={styles.nav_button} onClick={handleLogout}>
                                 <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
