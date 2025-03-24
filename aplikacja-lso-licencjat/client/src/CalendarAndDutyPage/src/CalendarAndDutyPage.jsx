@@ -12,11 +12,37 @@ import { useState, useEffect } from 'react';
 
 
 export function CalendarAndDutyPage(){
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+                if (response.ok) {
+                    setIsLoggedIn(true);
+                } else {
+                    setIsLoggedIn(false);
+                    navigate("/login");
+                }
+            } catch (err) {
+                setIsLoggedIn(false);
+                console.log(err);
+                navigate("/login");
+            }
+        };
+
+        checkLoginStatus();
+    }, [navigate]);
+
+
 
     const [calendarView, setCalendarView] = useState(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
     const [calendarToolbar, setCalendarToolbar] = useState({});
-    const [calendarKey, setCalendarKey] = useState(true); // Klucz wymuszający ponowny render
+    const [calendarKey, setCalendarKey] = useState(true); // Key forcing re-render
 
     const handleHomeButton = (info) => {
         navigate("/");
@@ -31,15 +57,19 @@ export function CalendarAndDutyPage(){
                 setCalendarView('timeGridWeek');
                 setCalendarToolbar({ left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' });
             }
-            setCalendarKey(prevKey => prevKey + 1); // Wymusza ponowny render kalendarza
+            setCalendarKey(prevKey => !prevKey); // Forcing re-render
         };
 
-        updateView(); // Ustawienie początkowego widoku
-        window.addEventListener('resize', updateView); // Nasłuchujemy zmiany szerokości ekranu
+        updateView(); // Setting initial view
+        window.addEventListener('resize', updateView); 
 
-        return () => window.removeEventListener('resize', updateView); // Czyszczenie event listenera
+        return () => window.removeEventListener('resize', updateView);
     }, []);
 
+
+    if (!isLoggedIn) {
+        return <div>Loading...</div>;
+    }
     
     return(
         <>
