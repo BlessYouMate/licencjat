@@ -1,9 +1,15 @@
 :root{
-    --background: #F4FFFB;
+    /* --background: #F4FFFB;
     --main-strong: #00D0FF;
     --main-light: #D8FBFF;
     --button-hover-strong: #bbf8ff;
-    --button-hover-light: #edfdff;
+    --button-hover-light: #edfdff; */
+
+    --background: #fffef4;
+    --main-strong: #ffa600;
+    --main-light: #fff6d8;
+    --button-hover-strong: #fff6bb;
+    --button-hover-light: #fffaed;
     
 }
 
@@ -82,6 +88,7 @@ HEADER
 
     width: 75%;
     height: 100%;
+    
 }
 
 .line {
@@ -97,6 +104,13 @@ HEADER
     border: 2px solid var(--main-strong);
     padding: 1%;
     border-radius: 11.5px;
+
+    background-image: url("/calendar_and_duty_assets/under_construction.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(60%);
+    color: white;
 }
 
 /* 
@@ -139,6 +153,22 @@ SIDEBAR
     filter: invert(51%) sepia(5%) saturate(450%) hue-rotate(4deg) brightness(96%) contrast(85%);
 }
 
+.nav_buttons,
+.nav_button {
+  position: relative;
+  z-index: 1010; /* Wyższy niż .side_bar i label */
+}
+
+
+#profile_btn, #settings_btn, #notifications_btn{
+    background-image: url("/calendar_and_duty_assets/under_construction.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(60%);
+    color: white;
+}
+
 .change_duty_button{
     background-color: var(--main-light);
 
@@ -166,6 +196,8 @@ SIDEBAR
     height: 80%;
     width: 100%;
     margin-top: 8%;
+
+    
 }
 
 .upcoming_assists{
@@ -178,6 +210,7 @@ SIDEBAR
     margin-top: 20%;
 
     
+    
 }
 
 .upcoming_assist{
@@ -189,6 +222,13 @@ SIDEBAR
     width: 80%;
     
     font-size: medium;
+
+    background-image: url("/calendar_and_duty_assets/under_construction.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(60%);
+    color: white;
     
 }
 
@@ -207,6 +247,13 @@ SIDEBAR
     width: 80%;
     
     font-size: large;
+
+    background-image: url("/calendar_and_duty_assets/under_construction.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(60%);
+    color: white;
 }
 
 .all_assists_button:hover{
@@ -323,7 +370,7 @@ MEDIAQUERY
     .side_bar{
         position: fixed;
         top: 0;
-        z-index: 1000;
+        z-index: 500;
 
         right: -100%;
         transition: .5s ease-in;

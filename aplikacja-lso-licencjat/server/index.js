@@ -5,6 +5,10 @@ import cors from 'cors';
 import cookiePareser from "cookie-parser"
 
 import authRouter from './routes/authRouter.js';
+import eventRouter from './routes/eventsRouter.js';
+import scheduleRouter from './routes/schedulerRouter.js';
+import testOfAlgorithmsRouter from './routes/testOfAlgorithmsRouter.js';
+import { authMiddleware } from './middleware/authMiddleware.js';
 
 //Load from .env
 dotenv.config({ path: './.env' });
@@ -25,6 +29,11 @@ app.use(express.json());
 app.use(cookiePareser());
 
 app.use(authRouter)
+app.use(eventRouter)
+app.use(scheduleRouter)
+app.use(testOfAlgorithmsRouter)
+app.use(authMiddleware)
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

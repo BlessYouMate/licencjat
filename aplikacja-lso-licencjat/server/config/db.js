@@ -18,15 +18,97 @@ const createTables = async () => {
     try{
         const CreateUserTable = 
         `
-        CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        login VARCHAR(16) UNIQUE NOT NULL,
-        password VARCHAR(128) NOT NULL
-        );
-    `;
+            CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            login VARCHAR(16) UNIQUE NOT NULL,
+            password VARCHAR(128) NOT NULL,
+            isAdmin BOOLEAN DEFAULT FALSE
+            );
+        `; 
 
-    await pool.query(CreateUserTable);
-    console.log("User table successfully created or previously existed")
+        const CreateEventsTable = 
+        `
+            CREATE TABLE IF NOT EXISTS events (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                weekday VARCHAR(10) NOT NULL CHECK (
+                    weekday IN (
+                        'monday', 'tuesday', 'wednesday', 
+                        'thursday', 'friday', 'saturday', 'sunday'
+                    )
+                ),
+                time TIME NOT NULL
+            );
+        `;
+
+        const CreateUsersPreferencesTable = 
+        `
+            CREATE TABLE IF NOT EXISTS users_preferences (
+                id SERIAL PRIMARY KEY,
+                user_id INT NOT NULL,
+                event_id INT NOT NULL,
+                preference INT NOT NULL,
+                is_sunday BOOLEAN NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+                CONSTRAINT unique_user_event UNIQUE (user_id, event_id)
+            );
+
+        `;
+
+        const CreateScheduleTable = 
+        `
+            CREATE TABLE IF NOT EXISTS schedule (
+                id SERIAL PRIMARY KEY,
+                user_id INT NOT NULL,
+                event_id INT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+                CONSTRAINT unique_schedule_entry UNIQUE (user_id, event_id)
+            );
+        `;
+
+    
+        await pool.query(CreateUserTable);
+        await pool.query(CreateEventsTable);
+        await pool.query(CreateUsersPreferencesTable);
+        await pool.query(CreateScheduleTable);
+
+        console.log("User table successfully created or previously existed")
+
+       await pool.query(`
+        CREATE OR REPLACE FUNCTION set_is_sunday() 
+        RETURNS TRIGGER AS $$
+        BEGIN
+            IF (SELECT weekday FROM events WHERE id = NEW.event_id) = 'sunday' THEN
+                NEW.is_sunday := true;
+            ELSE
+                NEW.is_sunday := false;
+            END IF;
+            
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+    `);
+
+    await pool.query(`
+        DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 
+                    FROM pg_trigger 
+                    WHERE tgname = 'trigger_set_is_sunday'
+                ) THEN
+                    CREATE TRIGGER trigger_set_is_sunday
+                    BEFORE INSERT OR UPDATE ON users_preferences
+                    FOR EACH ROW
+                    EXECUTE FUNCTION set_is_sunday();
+                END IF;
+            END$$;
+
+    `);
+
+        console.log("Trigger successfully created");
     }
     catch(err){
         console.log("error creating tables", err)

@@ -139,6 +139,16 @@ MAIN CONTENT
     cursor: pointer;
 }
 
+.attendance_card, .liturgical_calendar_card, .bulletin_board_card, #settings, #notifications{
+    background-image: url("/homepage_assets/under_construction.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(60%);
+    color: white;
+}
+
+
 .card .icon{
     margin-left: 5%;
 }

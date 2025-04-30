@@ -7,7 +7,7 @@ dotenv.config({ path: "./.env" });
 
 const register = async (req, res) => {
 
-    const { login, password } = req.body;
+    const { login, password, isAdmin } = req.body; 
 
     if( !login || !password ){
         return res.status(400).json({ error: "login and password required" })
@@ -23,8 +23,8 @@ const register = async (req, res) => {
         
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const newUser = await db.query("INSERT INTO users (login, password) VALUES ($1, $2) RETURNING *", 
-            [login, hashedPassword]
+        const newUser = await db.query("INSERT INTO users (login, password, isadmin) VALUES ($1, $2, $3) RETURNING *", 
+            [login, hashedPassword, isAdmin]
         );
 
         res.status(201).json({message: "user successfully created!", user: newUser.rows[0] });
@@ -58,15 +58,15 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            {userId: user.id, login: user.login },
+            {userId: user.id, login: user.login, isadmin: user.isadmin }, 
             process.env.JWT_SECRET,
             {expiresIn: "30m"}
         )
 
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: true,
-            samSite: "Strict",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
             maxAge: 30 * 60 * 1000
         });
 
@@ -91,4 +91,13 @@ const logout = async (req, res) => {
     }
 }
 
-export {register, login, logout};
+
+
+const getUserInfo = (req, res) => {
+    const { userId, login, isadmin } = req.user;
+    res.status(200).json({ userId, login, isadmin });
+};
+
+
+
+export {register, login, logout, getUserInfo};

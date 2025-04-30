@@ -10,19 +10,21 @@ export function HomePage() {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/`, {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserInfo`, {
                     method: "GET",
                     credentials: "include",
                 });
+                
                 if (response.ok) {
+                    const data = await response.json();
                     setIsLoggedIn(true);
                 } else {
                     setIsLoggedIn(false);
                     navigate("/login");
                 }
             } catch (err) {
+                console.log("User info error:", err);
                 setIsLoggedIn(false);
-                console.log(err);
                 navigate("/login");
             }
         };
@@ -35,6 +37,7 @@ export function HomePage() {
     }
 
     const handleLogout = async () => {
+        console.log("wylogowywanie")
         try {
             await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
                 method: "POST",
@@ -66,14 +69,14 @@ export function HomePage() {
                         <div className={styles.nav_icons}>
                             <label htmlFor="sidebar_active"  className={styles.close_sidebar}>   
                             </label>
-                            <button className={styles.nav_button} onClick={handleLogout}>
-                                <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
+                            <button className={styles.nav_button} onClick={() =>{handleLogout()}}>
+                                <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} id={styles.profile} alt="Profile" />
                             </button>
                             <button className={styles.nav_button}>
-                                <img src="/homepage_assets/setting_icon.png" className={styles.nav_icon} alt="Settings" />
+                                <img src="/homepage_assets/setting_icon.png" className={styles.nav_icon} id={styles.settings} alt="Settings" />
                             </button>
                             <button className={styles.nav_button}>
-                                <img src="/homepage_assets/notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
+                                <img src="/homepage_assets/notifications_icon.png" className={styles.nav_icon} id={styles.notifications} alt="Notifications" />
                             </button>
                         </div>
                    </nav>

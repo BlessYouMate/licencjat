@@ -13,40 +13,45 @@ import { useState, useEffect } from 'react';
 
 export function CalendarAndDutyPage(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
     const navigate = useNavigate();
+
+    
 
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/`, {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserInfo`, {
                     method: "GET",
                     credentials: "include",
                 });
+                
                 if (response.ok) {
+                    const data = await response.json();
+
                     setIsLoggedIn(true);
+                    setIsAdmin(data.isadmin); 
                 } else {
                     setIsLoggedIn(false);
                     navigate("/login");
                 }
             } catch (err) {
+                console.log("User info error:", err);
                 setIsLoggedIn(false);
-                console.log(err);
                 navigate("/login");
             }
         };
-
+    
         checkLoginStatus();
     }, [navigate]);
+    
 
 
 
     const [calendarView, setCalendarView] = useState(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
     const [calendarToolbar, setCalendarToolbar] = useState({});
     const [calendarKey, setCalendarKey] = useState(true); // Key forcing re-render
-
-    const handleHomeButton = (info) => {
-        navigate("/");
-    };
 
     useEffect(() => {
         const updateView = () => {
@@ -79,7 +84,7 @@ export function CalendarAndDutyPage(){
 
             <div className={styles.header}>
                 <button className={styles.home_button}>
-                    <img src='/calendar_and_duty_assets/home.png' className={styles.home_icon} onClick={handleHomeButton}></img>
+                    <img src='/calendar_and_duty_assets/home.png' className={styles.home_icon} onClick={ ()=>{navigate("/")}}></img>
                 </button>
                 <div className={styles.upcoming_bar}>
                     <div className={`${styles.upcomin_duty, styles.upcoming_item}`}>
@@ -92,9 +97,13 @@ export function CalendarAndDutyPage(){
                         Najbliższe święto:  25 Marca 2025 Wielki Piątek
                     </div>
                 </div>
-                <button className={styles.admin_button_header}>
-                    <img src='/calendar_and_duty_assets/crown.png' className={styles.admin_icon}></img>
-                </button>
+               
+                {isAdmin && (
+                    <button className={styles.admin_button_header} onClick={()=>{navigate("/admin_panel")}}>
+                        <img src='/calendar_and_duty_assets/crown.png' className={styles.admin_icon} alt="Admin Panel" />
+                    </button>
+                )}
+
                 
                 
             </div>
@@ -105,25 +114,28 @@ export function CalendarAndDutyPage(){
                 <div className={styles.close_and_admin}>
                     <label htmlFor="sidebar_active"  className={styles.close_sidebar}>   
                     </label>
-                    <button className={styles.admin_button_sidebar}>
-                        <img src='/calendar_and_duty_assets/crown.png' className={styles.admin_icon}></img>
-                    </button>
+                    {isAdmin && (
+                        <button className={styles.admin_button_sidebar} onClick={()=>{navigate("/admin_panel")}}>
+                            <img src='/calendar_and_duty_assets/crown.png' className={styles.admin_icon} alt="Admin Panel" />
+                        </button>
+                    )}
+
                 </div>
                 
 
                 <div className={styles.nav_buttons}>
                     <button className={styles.nav_button}>
-                        <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} alt="Profile" />
+                        <img src="/homepage_assets/profile_icon.png" className={styles.nav_icon} id={styles.profile_btn} alt="Profile" />
                     </button>
                     <button className={styles.nav_button}>
-                        <img src="/homepage_assets/setting_icon.png" className={styles.nav_icon} alt="Settings" />
+                        <img src="/homepage_assets/setting_icon.png" className={styles.nav_icon} id={styles.settings_btn} alt="Settings" />
                     </button>
                     <button className={styles.nav_button}>
-                        <img src="/homepage_assets/notifications_icon.png" className={styles.nav_icon} alt="Notifications" />
+                        <img src="/homepage_assets/notifications_icon.png" className={styles.nav_icon} id={styles.notifications_btn} alt="Notifications" />
                     </button>
                 </div>
 
-                <button className={styles.change_duty_button}>
+                <button className={styles.change_duty_button} onClick={()=>{navigate("/change_duty")}}>
                     Zmiana dyżuru
                 </button>
             
