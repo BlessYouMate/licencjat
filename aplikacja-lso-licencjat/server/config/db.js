@@ -19,27 +19,29 @@ const createTables = async () => {
         const CreateUserTable = 
         `
             CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            login VARCHAR(16) UNIQUE NOT NULL,
-            password VARCHAR(128) NOT NULL,
-            isAdmin BOOLEAN DEFAULT FALSE
+                id SERIAL PRIMARY KEY,
+                login VARCHAR(16) UNIQUE NOT NULL,
+                password VARCHAR(128) NOT NULL,
+                isAdmin BOOLEAN DEFAULT FALSE
             );
         `; 
 
-        const CreateEventsTable = 
+        const CreateEventsTable =
         `
             CREATE TABLE IF NOT EXISTS events (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 weekday VARCHAR(10) NOT NULL CHECK (
                     weekday IN (
-                        'monday', 'tuesday', 'wednesday', 
-                        'thursday', 'friday', 'saturday', 'sunday'
+                    'monday', 'tuesday', 'wednesday', 
+                    'thursday', 'friday', 'saturday', 'sunday'
                     )
                 ),
-                time TIME NOT NULL
+                time TIME NOT NULL,
+                min_users INTEGER NOT NULL DEFAULT 1
             );
         `;
+      
 
         const CreateUsersPreferencesTable = 
         `

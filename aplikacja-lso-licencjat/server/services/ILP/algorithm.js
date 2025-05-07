@@ -2,95 +2,72 @@ import GLPK from 'glpk.js';
 import { fetchData, preprocessPreferences, checkMinUsers } from '../schedulerMinReq.js';
 import { prepareILPData, buildDecisionVariables, buildILPModel } from './model.js';
 
-// Wspólna funkcja rozwiązująca ILP dla podanych preferencji
-const solveILPForPrefs = async (prefs, minUsers, label) => {
-  // 1) Walidacja minimalnej liczby użytkowników
-  if (!checkMinUsers(prefs, minUsers)) {
-    console.warn(`${label}: insufficient users to satisfy minUsers (${minUsers}), skipping.`);
-    return [];
-  }
+async function solveILPForPrefs(prefs, minUsersMap, numOfEventPerUser, label) {
+  console.group(label, 'ILP solve');
 
-  // 2) Przygotowanie danych dla ILP (unikalni użytkownicy i eventy)
-  const { uniqueUsers, uniqueEvents } = prepareILPData(prefs);
-  // 3) Zmienne decyzyjne
-  const decisionVariables = buildDecisionVariables(uniqueUsers, uniqueEvents, prefs);
-  console.log(`${label} decision variables:`, decisionVariables);
-
-  // 4) Inicjalizacja solvera
-  const glpkInstance = await GLPK();
-  // 5) Budowa modelu ILP
-  const model = buildILPModel(decisionVariables, uniqueUsers, uniqueEvents, minUsers, glpkInstance);
-  console.log(`${label} ILP model:`, model);
-
-  // 6) Rozwiązanie modelu
-  const result = await glpkInstance.solve(model, glpkInstance.GLP_MSG_OFF);
-  if (!result?.result?.vars) {
-    console.error(`${label}: failed to solve ILP!`);
-    return [];
-  }
-
-  // 7) Parsowanie wyniku: tylko zmienne z wartością 1
-  const assignment = [];
-  for (let varName in result.result.vars) {
-    if (result.result.vars[varName] === 1) {
-      const [, userStr, eventStr] = varName.split('_');
-      assignment.push({ userId: +userStr, eventId: +eventStr });
+  // 1) dla każdego eventu wyciągamy jego minUsers
+  const eventIds = Array.from(new Set(prefs.map(p => p.eventId)));
+  // 2) sprawdzamy, czy w ogóle da się spełnić minima:
+  for (let ev of eventIds) {
+    const havePrefs = prefs.filter(p => p.eventId === +ev).length;
+    const wantMin = minUsersMap[ev] ?? 0;
+    if (havePrefs < wantMin) {
+      console.warn(`${label}: insufficient prefs for event ${ev} (have ${havePrefs}, need ${wantMin}), skipping.`);
+      console.groupEnd();
+      return [];
     }
   }
-  console.log(`${label} assignment:`, assignment);
+
+  // 3) budujemy ILP
+  const { uniqueUsers, uniqueEvents } = prepareILPData(prefs);
+  const decisionVariables = buildDecisionVariables(uniqueUsers, uniqueEvents, prefs);
+  const glpk = await GLPK();
+  //Budowa modelu ILP
+  const fullModel = buildILPModel(
+    decisionVariables,
+    uniqueUsers,
+    uniqueEvents,
+    minUsersMap,
+    numOfEventPerUser,
+    glpk
+  );
+  console.log(label, 'ILP model:', fullModel);
+
+  // 4) solve
+  const result = await glpk.solve(fullModel, glpk.GLP_MSG_OFF);
+  if (!result?.result?.vars) {
+    console.error(`${label}: ILP failed`);
+    console.groupEnd();
+    return [];
+  }
+
+  // 5) parsowanie
+  const assignment = [];
+  for (let v in result.result.vars) {
+    if (result.result.vars[v] === 1) {
+      const [, u, e] = v.split('_');
+      assignment.push({ userId: +u, eventId: +e });
+    }
+  }
+  console.log(label, 'assignment:', assignment);
+  console.groupEnd();
   return assignment;
-};
-
-function groupBy(arr, key, mapper) {
-  return arr.reduce((acc, item) => {
-    const k = item[key];
-    if (!acc[k]) acc[k] = [];
-    acc[k].push(mapper ? mapper(item) : item);
-    return acc;
-  }, {});
 }
 
-function countNonOptimal(assignments, prefs) {
-  const maxMap = {};
-  prefs.forEach(({ userId, preference }) => {
-    maxMap[userId] = Math.max(maxMap[userId] || 0, preference);
+export async function runILPAlgorithm(numOfEventPerUser) {
+  const raw = await fetchData();
+  const { sundayPreferences, weeklyPreferences } = preprocessPreferences(raw);
+
+  // pobieramy min_users per‐event
+  const evRes = await fetch(`${import.meta.env.VITE_API_URL}/getAllEvents`, {
+    credentials: 'include'
   });
+  if (!evRes.ok) throw new Error('Cannot load events');
+  const { events } = await evRes.json();
+  const minUsersMap = Object.fromEntries(events.map(e => [e.id, e.min_users]));
 
-  const prefMap = groupBy(prefs, 'userId', ({eventId, preference}) => ({ eventId, preference }));
-  return assignments.filter(({ userId, eventId }) => {
-    const userEvents = prefMap[userId] || [];
-    const assignedPref = (userEvents.find(e => e.eventId === eventId)?.preference) || 0;
-    return assignedPref < maxMap[userId];
-  }).length;
+  const sunday = await solveILPForPrefs(sundayPreferences, minUsersMap, numOfEventPerUser, 'Sunday');
+  const weekly = await solveILPForPrefs(weeklyPreferences, minUsersMap, numOfEventPerUser, 'Weekly');
+
+  return { sunday, weekly };
 }
-
-
-// Główna funkcja uruchamiająca ILP dla niedzielnych i tygodniowych preferencji
-const runILPAlgorithm = async (settedMinUsers) => {
-  // Pobranie i przetworzenie preferencji
-  const preferences = await fetchData();
-  const { weeklyPreferences, sundayPreferences } = preprocessPreferences(preferences);
-  const minUsers = settedMinUsers;
-
-  // Uruchamiamy dla Sunday i Weekly bez powtarzania kodu
-  const sundayAssignment = await solveILPForPrefs(sundayPreferences, minUsers, 'Sunday');
-  console.log(
-    '❗Users not on highest preference:',
-    countNonOptimal(sundayAssignment, sundayPreferences)
-  );
-  const weeklyAssignment = await solveILPForPrefs(weeklyPreferences, minUsers, 'Weekly');
-  console.log(
-    '❗Users not on highest preference:',
-    countNonOptimal(weeklyAssignment, weeklyPreferences)
-  );
-
-  
-
-  // Zwracamy obiekt z dwoma tablicami tak jak oczekiwano
-  return {
-    sunday: sundayAssignment,
-    weekly: weeklyAssignment
-  };
-};
-
-export { runILPAlgorithm };

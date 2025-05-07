@@ -4,7 +4,7 @@ import { CalendarAndDutyPage } from '../CalendarAndDutyPage/src/CalendarAndDutyP
 import { AdminPanel } from '../AdminPanel/src/AdminPanel.jsx';
 import { AddingDuties } from '../AdminPanel/AdminFunctions/AddingDuties/src/AddingDuties.jsx';
 import { ChangeDutyForm } from '../ChangeDutyForm/src/ChangeDutyForm.jsx';
-import { TestOfAlgorithsm } from '../TestOfAlgorithms/src/TestOfAlgorithms.jsx';
+import { TestOfAlgorithms } from '../TestOfAlgorithms/src/TestOfAlgorithms.jsx';
 import ErrorPage from './ErrorPage.jsx';
 
 const routes = [
@@ -35,7 +35,7 @@ const routes = [
   },
   {
     path: "test_of_algorithms",
-    element: <TestOfAlgorithsm />,
+    element: <TestOfAlgorithms />,
   },
 ]
 

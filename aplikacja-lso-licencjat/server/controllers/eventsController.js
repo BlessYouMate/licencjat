@@ -2,15 +2,17 @@ import db from "../config/db.js"
 
 const createEvent = async (req, res) => {
 
-    const { title, weekday, time } = req.body;
+    const { title, weekday, time, minUsers } = req.body;
 
-    if( !title || !weekday || !time ){
+    if( !title || !weekday || !time || !minUsers ){
         return res.status(400).json({ error: "all informations are required" })
     }
 
     try{
-        const newEventQuery = await db.query("INSERT INTO events (title, weekday, time) VALUES ($1, $2, $3) RETURNING *", 
-        [title, weekday, time]
+        const newEventQuery = await db.query(`INSERT INTO events (title, weekday, time, min_users)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [title, weekday, time, minUsers]
     );
 
 

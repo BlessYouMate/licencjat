@@ -78,7 +78,7 @@ const analyseAssignment = (assignmentPart, label, prefMap, maxPrefMap) => {
 
 
 // Główna funkcja
-async function analysePreferences(algorithm, minUsers) {
+async function analysePreferences(algorithm, numOfEventPerUser) {
   const result = { ok: true, errorMessage: "" };
 
   // 1) Fetch all preferences
@@ -98,8 +98,8 @@ async function analysePreferences(algorithm, minUsers) {
   let assignment = null;
   try {
     assignment = algorithm === "ilp"
-      ? await runILPAlgorithm(minUsers)
-      : await runMyAlgorithm(minUsers);
+      ? await runILPAlgorithm(numOfEventPerUser)
+      : await runMyAlgorithm();
   } catch (err) {
     console.error("Algorithm error:", err);
     return; // nie ma sensu dalej analizować bez assignmentu

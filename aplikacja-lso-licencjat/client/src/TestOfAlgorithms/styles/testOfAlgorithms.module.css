@@ -33,7 +33,11 @@
 
     border-radius: 5px;
 
-    width: 40%; 
+    width: 50%; 
+
+    overflow-y: scroll;
+
+    max-height: 90%;
 }
 
 .form label, .main input, .main button, .main p {
@@ -79,12 +83,16 @@
     padding: 25px;
     backdrop-filter: blur(10px);
 
-    font-size: 4rem;
+    font-size: 3rem;
     color: rgb(15, 222, 15);
     font-weight: bold;
    
     margin: auto;
 
-    max-width: 50%;
+    max-width: 40%;
 
+}
+
+.algorithms_choice_container{
+    display: flex;
 }

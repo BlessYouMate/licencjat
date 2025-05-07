@@ -48,113 +48,60 @@ const buildDecisionVariables = (uniqueUsers, uniqueEvents, preferences) => {
 };
 
 // Funkcja budująca kompletny model ILP do rozwiązania
-const buildILPModel = (decisionVariables, uniqueUsers, uniqueEvents, minUsers, glpkInstance) => {
-    // 1. Funkcja celu: Maksymalizacja sumy wag preferencji (czyli: przypisać użytkowników jak najlepiej według ich preferencji)
+// buildILPModel teraz przyjmuje minUsersMap zamiast jednej liczby
+const buildILPModel = (
+    decisionVariables,
+    uniqueUsers,
+    uniqueEvents,
+    minUsersMap,     // mapa: eventId → minUsers
+    numOfEventPerUser,
+    glpkInstance
+  ) => {
     const objectiveVars = decisionVariables.map(v => ({
-        name: v.name, // Nazwa zmiennej, np. "x_1_2"
-        coef: v.coef  // Wartość preferencji (do maksymalizacji)
+      name: v.name,
+      coef: v.coef
     }));
-
-    /* Przykład struktury objectiveVars:
-    [
-        { name: 'x_1_1', coef: 4 },
-        { name: 'x_1_2', coef: 2 },
-        { name: 'x_2_1', coef: 5 },
-        ...
-    ]
-    */
-
-    // 2. Ograniczenia dla użytkowników:
-    // Każdy użytkownik musi być przypisany do dokładnie JEDNEGO wydarzenia (nie więcej, nie mniej)
-    const userConstraints = uniqueUsers.map(user => {
-        const userVars = decisionVariables
-            .filter(v => v.user === user) // Filtrujemy zmienne związane z użytkownikiem
-            .map(v => ({ name: v.name, coef: 1 })); // Wszystkie zmienne użytkownika mają współczynnik 1 w ograniczeniu
-
-        return {
-            name: `user_${user}`, // Nazwa ograniczenia np. "user_1"
-            vars: userVars,       // Lista zmiennych związanych z użytkownikiem
-            bnds: { type: glpkInstance.GLP_FX, lb: 1, ub: 1 } // Musi być dokładnie jedna zmienna ustawiona na 1 (glp fixed, lower bound, upper bound)
-        };
+  
+    const userConstraints = uniqueUsers.map(u => {
+      const vars = decisionVariables
+        .filter(v => v.user === u)
+        .map(v => ({ name: v.name, coef: 1 }));
+      return {
+        name: `user_${u}`,
+        vars,
+        bnds: { type: glpkInstance.GLP_FX, lb: numOfEventPerUser, ub: numOfEventPerUser }
+      };
     });
-
-    /* Przykład struktury pojedynczego ograniczenia użytkownika:
-    {
-        name: 'user_1',
-        vars: [
-            { name: 'x_1_1', coef: 1 },
-            { name: 'x_1_2', coef: 1 },
-            { name: 'x_1_3', coef: 1 }
-        ],
-        bnds: { type: GLP_FX, lb: 1, ub: 1 }
-    }
-    */
-
-    // 3. Ograniczenia dla wydarzeń:
-    // Każde wydarzenie musi mieć przypisanych CO NAJMNIEJ `minUsers` użytkowników
-    const eventConstraints = uniqueEvents.map(event => {
-        const eventVars = decisionVariables
-            .filter(v => v.event === event) // Filtrujemy zmienne związane z wydarzeniem
-            .map(v => ({ name: v.name, coef: 1 }));
-
-        return {
-            name: `event_${event}`, // Nazwa ograniczenia np. "event_2"
-            vars: eventVars,        // Lista zmiennych związanych z wydarzeniem
-            bnds: { type: glpkInstance.GLP_LO, lb: minUsers } // Suma zmiennych >= minUsers
-        };
+  
+    // ** tutaj używamy dla każdego eventu jego własnego progu **
+    const eventConstraints = uniqueEvents.map(eid => {
+      const vars = decisionVariables
+        .filter(v => v.event === eid)
+        .map(v => ({ name: v.name, coef: 1 }));
+      return {
+        name: `event_${eid}`,
+        vars,
+        bnds: { type: glpkInstance.GLP_LO, lb: minUsersMap[eid] || 0 }
+      };
     });
-
-    /* Przykład struktury pojedynczego ograniczenia wydarzenia:
-    {
-        name: 'event_2',
-        vars: [
-            { name: 'x_1_2', coef: 1 },
-            { name: 'x_2_2', coef: 1 },
-            { name: 'x_3_2', coef: 1 }
-        ],
-        bnds: { type: GLP_LO, lb: 2 }
-    }
-    */
-
-    // Kompletna definicja modelu ILP, który przekażemy solverowi GLPK
+  
     const model = {
-        name: "AssignmentModel", // Nazwa modelu
-        objective: {
-            direction: glpkInstance.GLP_MAX, // Maksymalizacja (może być GLP_MIN gdybyśmy minimalizowali)
-            name: "obj",                     // Nazwa funkcji celu
-            vars: objectiveVars              // Lista zmiennych z wagami
-        },
-        subjectTo: [
-            ...userConstraints, // Lista ograniczeń użytkowników
-            ...eventConstraints // Lista ograniczeń wydarzeń
-        ],
-        binaries: decisionVariables.map(v => v.name) // Wszystkie zmienne są binarne (0 lub 1) — nie mogą być np. 0.5
-    };
-
-    return model; // Zwracamy kompletny model
-
-    /* Przykład finalnej struktury modelu:
-    {
         name: "AssignmentModel",
         objective: {
-            direction: GLP_MAX,
-            name: "obj",
-            vars: [
-                { name: 'x_1_1', coef: 4 },
-                { name: 'x_1_2', coef: 2 },
-                ...
-            ]
+          direction: glpkInstance.GLP_MAX,
+          name: "obj",
+          vars: objectiveVars
         },
         subjectTo: [
-            { name: 'user_1', vars: [...], bnds: {...} },
-            { name: 'user_2', vars: [...], bnds: {...} },
-            { name: 'event_1', vars: [...], bnds: {...} },
-            ...
+          ...userConstraints,
+          ...eventConstraints
         ],
-        binaries: ['x_1_1', 'x_1_2', 'x_2_1', ...]
-    }
-    */
-};
+        binaries: decisionVariables.map(v => v.name)
+      }; 
+
+    return model
+  };
+  
 
 
 export { prepareILPData, buildDecisionVariables, buildILPModel };

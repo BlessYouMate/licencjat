@@ -5,30 +5,39 @@ export async function runMyAlgorithm(minUsers) {
   const { weeklyPreferences, sundayPreferences } = preprocessPreferences(rawPrefs);
   console.warn(weeklyPreferences)
 
-  const sunday = balanceAndLog('Sunday', sundayPreferences, minUsers);
-  const weekly = balanceAndLog('Weekly', weeklyPreferences, minUsers);
+  // 2) Pobierz wszystkie events, wraz z min_users
+  const evRes = await fetch(`${import.meta.env.VITE_API_URL}/getAllEvents`, {
+    credentials: 'include'
+  });
+  if (!evRes.ok) throw new Error("Could not fetch events");
+  const { events } = await evRes.json();
+  // Zbuduj mapę eventId → min_users
+  const minUsersMap = Object.fromEntries(events.map(e => [e.id, e.min_users]));
+
+  // 3) Balansuj obu grup
+  const sunday = balanceAndLog('Sunday', sundayPreferences, minUsersMap);
+  const weekly = balanceAndLog('Weekly', weeklyPreferences, minUsersMap);
 
   return { sunday, weekly };
 }
 
 // Balancing with console logging
-function balanceAndLog(label, preferences, minUsers) {
+function balanceAndLog(label, preferences, minUsersMap) {
   console.group(`${label} balance`);
-  const assignmentMap = balance(preferences, minUsers);
+  const assignmentMap = balance(preferences, minUsersMap);
   const assignment = finalize(assignmentMap);
 
-  // Verify each event meets minUsers
-  const eventCounts = assignment.reduce((acc, { eventId }) => {
-    acc[eventId] = (acc[eventId] || 0) + 1;
+  // 4) Sprawdź każdy event pod kątem jego własnego minUsers
+  const counts = assignment.reduce((acc, {eventId}) => {
+    acc[eventId] = (acc[eventId]||0) + 1;
     return acc;
   }, {});
-  Object.entries(eventCounts).forEach(([eventId, count]) => {
-    if (count < minUsers) {
-      console.error(
-        `Event ${eventId} has only ${count} users assigned, below minUsers=${minUsers}`
-      );
+  for (let [ev, cnt] of Object.entries(counts)) {
+    const req = minUsersMap[+ev] ?? 0;
+    if (cnt < req) {
+      console.error(`Event ${ev} has ${cnt} users, needs ${req}`);
     }
-  });
+  }
 
   console.log(`${label} assignment:`, assignment);
   console.log(
@@ -40,17 +49,24 @@ function balanceAndLog(label, preferences, minUsers) {
   return assignment;
 }
 
-// Main balancing function
-function balance(prefs, minUsers) {
-  if (!checkMinUsers(prefs, minUsers)) return {};
+// balance bierze teraz mapę progów
+function balance(prefs, minUsersMap) {
+  // jeśli któryś event nie ma szansy osiągnąć swojego progu, od razu przerwij
+  if (!checkMinUsers(prefs, Object.values(minUsersMap))) return {};
 
-  const userPrefs = groupBy(prefs, 'userId', ({eventId, preference}) => ({ eventId, preference }));
-  const eventPrefs = groupBy(prefs, 'eventId', ({userId, preference}) => ({ userId, preference }));
+  // 1) grupowania
+  const userPrefs  = groupBy(prefs, 'userId', ({eventId,preference}) => ({eventId,preference}));
+  const eventPrefs = groupBy(prefs, 'eventId', ({userId,preference}) => ({userId,preference}));
   sortGroupPreferences(eventPrefs);
 
-  const { assignment, counts } = greedyAssign(userPrefs);
-  return enforceMinUsers(eventPrefs, assignment, counts, minUsers, userPrefs);
+  // 2) greedy
+  const {assignment, counts} = greedyAssign(userPrefs);
+
+  // 3) wymuś spełnianie progów per-event
+  return enforceMinUsers(eventPrefs, assignment, counts, minUsersMap, userPrefs);
+
 }
+
 
 // Step 1: Greedy assignment
 function greedyAssign(userPrefs) {
@@ -72,33 +88,34 @@ function greedyAssign(userPrefs) {
   return { assignment, counts };
 }
 
-// Step 2: Enforce minUsers with fallback
-function enforceMinUsers(eventPrefs, assignment, counts, minUsers, userPrefs) {
-  Object.keys(eventPrefs).forEach(eventId => {
-    while ((counts[eventId] || 0) < minUsers) {
-      const candidate = findCandidate(eventId, eventPrefs[eventId], assignment, counts, minUsers, userPrefs);
+// enforceMinUsers bierze mapę progów zamiast pojedynczej liczby
+function enforceMinUsers(eventPrefs, assignment, counts, minUsersMap, userPrefs) {
+  for (let ev of Object.keys(eventPrefs)) {
+    const req = minUsersMap[+ev]||0;
+    while ((counts[ev]||0) < req) {
+      const candidate = findCandidate(ev, eventPrefs[ev], assignment, counts, minUsersMap, userPrefs);
       if (!candidate) {
-        console.warn(`Cannot fulfill minimum for event ${eventId}`);
+        console.warn(`Cannot fulfill minimum for event ${ev}`);
         break;
       }
-      reassign(candidate, eventId, assignment, counts);
+      reassign(candidate, ev, assignment, counts);
     }
-  });
-  return assignment;
+  }
 }
 
-// Select user best to move
-function findCandidate(target, candidates, assignment, counts, minUsers, userPrefs) {
+// findCandidate uwzględnia teraz mapę progów (by nie ruszać eventów, które są na styk)
+function findCandidate(target, candidates, assignment, counts, minUsersMap, userPrefs) {
   let best = null;
   for (const { userId, preference } of candidates) {
-    const current = assignment[userId];
-    if (current === target) continue;
-    if ((counts[current] || 0) <= minUsers) continue;
+    const from = assignment[userId];
+    if (from === target) continue;
+    // nie ruszaj eventów, które już są na lub poniżej swojego progu
+    if ((counts[from]||0) <= (minUsersMap[+from]||0)) continue;
 
-    const maxPref = Math.max(...userPrefs[userId].map(p => p.preference));
+    const maxPref = Math.max(...userPrefs[userId].map(p=>p.preference));
     const cost = maxPref - preference;
     if (!best || cost < best.cost) {
-      best = { userId, from: current, cost };
+      best = { userId, from, cost };
     }
   }
   return best;
