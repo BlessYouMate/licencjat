@@ -41,34 +41,28 @@ const solveILPForPrefs = async (prefs, minUsers, label) => {
   return assignment;
 };
 
-const analyzePreferenceDrops = (preferences, assignment) => {
-  // Grupuj preferencje użytkowników
-  const userPrefMap = {};
-  preferences.forEach(({ userId, eventId, preference }) => {
-    if (!userPrefMap[userId]) {
-      userPrefMap[userId] = {};
-    }
-    userPrefMap[userId][eventId] = preference;
+function groupBy(arr, key, mapper) {
+  return arr.reduce((acc, item) => {
+    const k = item[key];
+    if (!acc[k]) acc[k] = [];
+    acc[k].push(mapper ? mapper(item) : item);
+    return acc;
+  }, {});
+}
+
+function countNonOptimal(assignments, prefs) {
+  const maxMap = {};
+  prefs.forEach(({ userId, preference }) => {
+    maxMap[userId] = Math.max(maxMap[userId] || 0, preference);
   });
 
-  let usersDropped = 0;
-  let totalDropLevels = 0;
-
-  assignment.forEach(({ userId, eventId }) => {
-    const assignedPref = userPrefMap[userId]?.[eventId];
-    const maxPref = Math.max(...Object.values(userPrefMap[userId] || {}));
-
-    if (assignedPref !== undefined && assignedPref < maxPref) {
-      const drop = maxPref - assignedPref;
-      usersDropped += 1;
-      totalDropLevels += drop;
-      console.log(`User ${userId} assigned to preference ${assignedPref}, max was ${maxPref}, dropped ${drop} level(s).`);
-    }
-  });
-
-  console.warn(`\nTotal users who dropped: ${usersDropped}`);
-  console.warn(`Total preference levels dropped: ${totalDropLevels}`);
-};
+  const prefMap = groupBy(prefs, 'userId', ({eventId, preference}) => ({ eventId, preference }));
+  return assignments.filter(({ userId, eventId }) => {
+    const userEvents = prefMap[userId] || [];
+    const assignedPref = (userEvents.find(e => e.eventId === eventId)?.preference) || 0;
+    return assignedPref < maxMap[userId];
+  }).length;
+}
 
 
 // Główna funkcja uruchamiająca ILP dla niedzielnych i tygodniowych preferencji
@@ -80,9 +74,17 @@ const runILPAlgorithm = async (settedMinUsers) => {
 
   // Uruchamiamy dla Sunday i Weekly bez powtarzania kodu
   const sundayAssignment = await solveILPForPrefs(sundayPreferences, minUsers, 'Sunday');
-  analyzePreferenceDrops(sundayPreferences, sundayAssignment);
+  console.log(
+    '❗Users not on highest preference:',
+    countNonOptimal(sundayAssignment, sundayPreferences)
+  );
   const weeklyAssignment = await solveILPForPrefs(weeklyPreferences, minUsers, 'Weekly');
-  analyzePreferenceDrops(weeklyPreferences, weeklyAssignment);
+  console.log(
+    '❗Users not on highest preference:',
+    countNonOptimal(weeklyAssignment, weeklyPreferences)
+  );
+
+  
 
   // Zwracamy obiekt z dwoma tablicami tak jak oczekiwano
   return {

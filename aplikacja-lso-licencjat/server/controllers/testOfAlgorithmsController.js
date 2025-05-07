@@ -129,4 +129,13 @@ const fillPreferences = async (req, res) => {
     }
 };
 
+const runMyAlgorithm = async (minUsers) => {
+    await fetch('/api/run-my-algorithm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ minUsers })
+    });
+};
+
+
 export { fillEvents, fillUsers, fillPreferences };

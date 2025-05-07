@@ -69,7 +69,7 @@ function TestOfAlgorithsm() {
 
       <div className={styles.form}>
         <div className={styles.number_input}>
-          <label htmlFor="numOfWeekEvents">Ilość wydarzeń na tygodniu</label>
+          <label htmlFor="numOfWeekEvents">Liczba wydarzeń na tygodniu</label>
           <input
             id="numOfWeekEvents"
             type="number"
@@ -80,7 +80,7 @@ function TestOfAlgorithsm() {
           />
           <br />
 
-          <label htmlFor="numOfSundayEvents">Ilość wydarzeń w niedzielę</label>
+          <label htmlFor="numOfSundayEvents">Liczba wydarzeń w niedzielę</label>
           <input
             id="numOfSundayEvents"
             type="number"
@@ -91,7 +91,7 @@ function TestOfAlgorithsm() {
           />
           <br />
 
-          <label htmlFor="numOfUsers">Ilość użytkowników</label>
+          <label htmlFor="numOfUsers">Liczba użytkowników</label>
           <input
             id="numOfUsers"
             type="number"
