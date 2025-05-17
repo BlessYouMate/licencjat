@@ -1,9 +1,8 @@
+import "./config/db.js";
 import express from 'express';
 import dotenv from 'dotenv';
-import db from './config/db.js';
 import cors from 'cors';
 import cookiePareser from "cookie-parser"
-
 import authRouter from './routes/authRouter.js';
 import eventRouter from './routes/eventsRouter.js';
 import scheduleRouter from './routes/schedulerRouter.js';
