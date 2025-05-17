@@ -54,14 +54,14 @@ const buildILPModel = (
     uniqueUsers,
     uniqueEvents,
     minUsersMap,     // mapa: eventId → minUsers
-    numOfEventPerUser,
+    numOfEventsPerUser,
     glpkInstance
   ) => {
     const objectiveVars = decisionVariables.map(v => ({
       name: v.name,
       coef: v.coef
     }));
-  
+
     const userConstraints = uniqueUsers.map(u => {
       const vars = decisionVariables
         .filter(v => v.user === u)
@@ -69,11 +69,10 @@ const buildILPModel = (
       return {
         name: `user_${u}`,
         vars,
-        bnds: { type: glpkInstance.GLP_FX, lb: numOfEventPerUser, ub: numOfEventPerUser }
+        bnds: { type: glpkInstance.GLP_FX, lb: numOfEventsPerUser, ub: numOfEventsPerUser }
       };
     });
   
-    // ** tutaj używamy dla każdego eventu jego własnego progu **
     const eventConstraints = uniqueEvents.map(eid => {
       const vars = decisionVariables
         .filter(v => v.event === eid)

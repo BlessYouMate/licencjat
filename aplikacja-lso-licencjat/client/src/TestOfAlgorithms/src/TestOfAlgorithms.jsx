@@ -16,7 +16,7 @@ function TestOfAlgorithms() {
   const [testResultTextColor, setTestResultTextColor] = useState("lightgreen");
 
   const [sumOfMinUsers, setSumOfMinUsers] = useState(0);
-  const numOfEventPerUserRef = useRef(0);
+  const numOfEventsPerUserRef = useRef(0);
 
   const [eventsConfirmed, setEventsConfirmed] = useState(false);
   const [usersFilledConfirmed, setUsersFilledConfirmed] = useState(false);
@@ -39,7 +39,7 @@ function TestOfAlgorithms() {
 
   const handleCalculateUsers = async () => {
     try {
-      if (numOfEventPerUserRef.current <= 0) {
+      if (numOfEventsPerUserRef.current <= 0) {
         throw new Error("Podaj dodatnią liczbę wydarzeń na użytkownika");
       }
   
@@ -63,7 +63,7 @@ function TestOfAlgorithms() {
       }
   
       const calculatedSum = Math.max(sumSunday, sumWeek);
-      const estimatedUsers = Math.ceil(calculatedSum / numOfEventPerUserRef.current);
+      const estimatedUsers = Math.ceil(calculatedSum / numOfEventsPerUserRef.current);
       const usersNeeded = Math.max(estimatedUsers, maxMinUsers); 
       
       setSumOfMinUsers(usersNeeded);
@@ -107,7 +107,7 @@ function TestOfAlgorithms() {
         throw new Error("Wybierz algorytm");
       }
       
-      const result = await analysePreferences(algorithmRef.current, numOfEventPerUserRef);
+      const result = await analysePreferences(algorithmRef.current, numOfEventsPerUserRef.current);
       if (!result.ok) throw new Error("Błąd podczas testowania! Więcej w konsoli");
 
       setTestResultTextColor("lightgreen");
@@ -165,7 +165,7 @@ function TestOfAlgorithms() {
                 <input
                   type="number"
                   min="1"
-                  onChange={(e) => numOfEventPerUserRef.current = +e.target.value}
+                  onChange={(e) => numOfEventsPerUserRef.current = +e.target.value}
                 />
                 <button onClick={handleCalculateUsers}>Oblicz potrzebną liczbę użytkowników</button>
               </>
@@ -222,6 +222,18 @@ function TestOfAlgorithms() {
                     algorithmRef.current = e.target.value;
                   }}
                 />
+
+                <label htmlFor="bothAlgorithms">Oba</label>
+                <input
+                  id="bothAlgorithms"
+                  name="algorithm"
+                  type="radio"
+                  value="both"
+                  onChange={(e) => {
+                    algorithmRef.current = e.target.value;
+                  }}
+                />
+
                 <br />
                 
               </div>

@@ -1,7 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
-import { runILPAlgorithm } from '../../../../server/services/ILP/algorithm.js';
-import { runMyAlgorithm } from '../../../../server/services/myAlgorithm/algorithm.js';
 
 import styles from "../styles/AdminPanel.module.css"
 
@@ -10,6 +8,29 @@ export function AdminPanel(){
 
     const minUsersRef = useRef(1);
 
+    async function callILP(minUsers) {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/algorithms/run-ilp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ minUsers }),
+        credentials: 'include',
+    });
+    const json = await res.json();
+    console.log("ILP result:", json);
+}
+
+async function callCustom(minUsers) {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/algorithms/run-custom`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ minUsers }),
+    credentials: 'include',
+  });
+  const json = await res.json();
+  console.log("Custom result:", json);
+}
+
+
     return(
         <>
         <div className={styles.main}>
@@ -17,14 +38,11 @@ export function AdminPanel(){
                 Ręczne dodawanie wydarzeń
             </button>
 
-            <label htmlFor='minUsers' style={{fontSize: "2rem", margin: "20px 20px 0px 20px"}}>Minimalna ilość użytkowników na wydarzenie: </label>
-            <input type='number' min="1" style={{fontSize: "2rem", maxWidth: "250px", margin: "0px 20px 0px 20px"}} onChange={(e) => {minUsersRef.current = e.target.value} }></input>
-
-            <button className={styles.update_schedule_button} onClick={()=>{runILPAlgorithm(minUsersRef.current)}}>
+            <button className={styles.update_schedule_button} onClick={()=>{callILP(minUsersRef.current)}}>
                 ILP algorytm
             </button>
 
-            <button className={styles.update_schedule_button} onClick={()=>{runMyAlgorithm(minUsersRef.current)}}>
+            <button className={styles.update_schedule_button} onClick={()=>{callCustom(minUsersRef.current)}}>
                 Autorski algorytm
             </button>
 

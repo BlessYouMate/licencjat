@@ -1,23 +1,27 @@
+import db from "../config/db.js"
+
 const fetchData = async () => {
-    try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/getAllUsersPreferences`, {
-            method: "GET",
-            credentials: "include",
-        });
-        if (!response.ok) {
-            throw new Error("Błąd podczas pobierania danych");
-        }
+  try {
+    const result = await db.query(`
+      SELECT up.*
+      FROM users_preferences up
+      JOIN users u ON u.id = up.user_id
+      WHERE u.isadmin <> $1;
+    `, [true]);
 
-        const data = await response.json();
-        const preferencesArray = data.preferences;
+    const preferencesArray = result.rows.map(pref => ({
+      userId: pref.user_id,
+      eventId: pref.event_id,
+      preference: pref.preference,
+      isSunday: pref.is_sunday
+    }));
 
-        console.log("Pobrane dane:", preferencesArray);
-
-        return preferencesArray; 
-    } catch (error) {
-        console.error("Błąd pobierania danych:", error);
-        return [];
-    }
+    console.log("Pobrane dane:", preferencesArray);
+    return preferencesArray;
+  } catch (error) {
+    console.error("Błąd pobierania danych:", error);
+    return [];
+  }
 };
 
 const preprocessPreferences = (preferences) => {

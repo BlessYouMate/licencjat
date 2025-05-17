@@ -2,7 +2,9 @@ import GLPK from 'glpk.js';
 import { fetchData, preprocessPreferences, checkMinUsers } from '../schedulerMinReq.js';
 import { prepareILPData, buildDecisionVariables, buildILPModel } from './model.js';
 
-async function solveILPForPrefs(prefs, minUsersMap, numOfEventPerUser, label) {
+import db from "../../config/db.js"
+
+async function solveILPForPrefs(prefs, minUsersMap, numOfEventsPerUser, label) {
   console.group(label, 'ILP solve');
 
   // 1) dla każdego eventu wyciągamy jego minUsers
@@ -21,6 +23,7 @@ async function solveILPForPrefs(prefs, minUsersMap, numOfEventPerUser, label) {
   // 3) budujemy ILP
   const { uniqueUsers, uniqueEvents } = prepareILPData(prefs);
   const decisionVariables = buildDecisionVariables(uniqueUsers, uniqueEvents, prefs);
+  console.warn(decisionVariables)
   const glpk = await GLPK();
   //Budowa modelu ILP
   const fullModel = buildILPModel(
@@ -28,7 +31,7 @@ async function solveILPForPrefs(prefs, minUsersMap, numOfEventPerUser, label) {
     uniqueUsers,
     uniqueEvents,
     minUsersMap,
-    numOfEventPerUser,
+    numOfEventsPerUser,
     glpk
   );
   console.log(label, 'ILP model:', fullModel);
@@ -54,20 +57,17 @@ async function solveILPForPrefs(prefs, minUsersMap, numOfEventPerUser, label) {
   return assignment;
 }
 
-export async function runILPAlgorithm(numOfEventPerUser) {
+export async function runILPAlgorithm(numOfEventsPerUser) {
   const raw = await fetchData();
   const { sundayPreferences, weeklyPreferences } = preprocessPreferences(raw);
 
   // pobieramy min_users per‐event
-  const evRes = await fetch(`${import.meta.env.VITE_API_URL}/getAllEvents`, {
-    credentials: 'include'
-  });
-  if (!evRes.ok) throw new Error('Cannot load events');
-  const { events } = await evRes.json();
+  const { rows: events } = await db.query("SELECT * FROM events;");
   const minUsersMap = Object.fromEntries(events.map(e => [e.id, e.min_users]));
 
-  const sunday = await solveILPForPrefs(sundayPreferences, minUsersMap, numOfEventPerUser, 'Sunday');
-  const weekly = await solveILPForPrefs(weeklyPreferences, minUsersMap, numOfEventPerUser, 'Weekly');
+
+  const sunday = await solveILPForPrefs(sundayPreferences, minUsersMap, numOfEventsPerUser, 'Sunday');
+  const weekly = await solveILPForPrefs(weeklyPreferences, minUsersMap, numOfEventsPerUser, 'Weekly');
 
   return { sunday, weekly };
 }

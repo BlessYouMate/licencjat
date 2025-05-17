@@ -8,6 +8,9 @@ import authRouter from './routes/authRouter.js';
 import eventRouter from './routes/eventsRouter.js';
 import scheduleRouter from './routes/schedulerRouter.js';
 import testOfAlgorithmsRouter from './routes/testOfAlgorithmsRouter.js';
+
+import algorithmsRouter from './services/algorithms.js';
+
 import { authMiddleware } from './middleware/authMiddleware.js';
 
 //Load from .env
@@ -28,10 +31,14 @@ app.use(cors({
 app.use(express.json());
 app.use(cookiePareser());
 
+
 app.use(authRouter)
 app.use(eventRouter)
 app.use(scheduleRouter)
 app.use(testOfAlgorithmsRouter)
+
+app.use('/algorithms', algorithmsRouter);
+
 app.use(authMiddleware)
 
 
