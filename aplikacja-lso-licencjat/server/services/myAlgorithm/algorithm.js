@@ -87,10 +87,6 @@ function doTwoOptSwap(assignment, counts, userPrefs, minUsersMap) {
             const delta = (p1after + p2after) - (p1before + p2before);
             if (delta <= 0) continue;  // tylko poprawiające
 
-            // upewnij się, że swap nie złamie minUsers
-            if (counts[e1] - 1 < (minUsersMap[e1]||0)) continue;
-            if (counts[e2] - 1 < (minUsersMap[e2]||0)) continue;
-
             // wykonaj swap
             evList1[a] = e2;
             evList2[b] = e1;
@@ -152,13 +148,13 @@ function findCandidate(
   let best = null;
   for (const { userId } of candidates) {
     const fromList = assignment[userId]||[];
-    if (fromList.includes(targetEv)) continue; // sprawdzenie czy user jest w targecie
+    if (fromList.includes(targetEv)) continue;
     for (const fromEv of fromList) {
       if (fromEv==null) continue;
-      if ((counts[fromEv]||0) > (minUsersMap[fromEv]||0)) { // czy event ma nadwyzke
-        const maxPref = Math.max(...userPrefs[userId].map(p=>p.preference));
-        const targetPref = userPrefs[userId].find(p=>p.eventId===targetEv)?.preference||0;
-        const cost = maxPref - targetPref;
+      if ((counts[fromEv]||0) > (minUsersMap[fromEv]||0)) {
+        const fromPref = userPrefs[userId].find(p => p.eventId === fromEv)?.preference || 0;
+        const targetPref = userPrefs[userId].find(p => p.eventId === targetEv)?.preference || 0;
+        const cost = fromPref - targetPref;
         if (!best || cost < best.cost) best = { userId, from: fromEv, to: targetEv, cost };
         break;
       }
