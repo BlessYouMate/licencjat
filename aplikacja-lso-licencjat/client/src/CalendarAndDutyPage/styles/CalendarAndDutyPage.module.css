@@ -264,8 +264,9 @@ SIDEBAR
 
 CALENDAR 
 
-Height of the actual calendar is controlled by his height property in jsx file
-Custom calendar styles are in calendar.css file
+Wysokość samego kalendarza jest kontrolowana przez właściwość height w pliku JSX
+Niestandardowe style kalendarza znajdują się w pliku calendar.css
+
 
 */
 

@@ -1,7 +1,7 @@
 import db from "../config/db.js";
 import bcrypt from "bcrypt";
 
-// Clears and refills events table, now assigning random min_users between 1 and 4
+// Czyści i ponownie wypełnia tabelę wydarzeń, przypisując teraz losową wartość min_users od 1 do 4
 const fillEvents = async (req, res) => {
     const { numOfSundayEvents, numOfWeekEvents } = req.body;
   
@@ -74,12 +74,12 @@ const fillEvents = async (req, res) => {
     res.status(201).json({ message: "Events processing finished" });
   };
   
-// Clears users (except admin1) before filling
+// Czyści użytkowników przed wypełnieniem – usuwa wszystkich poza admin1
 const fillUsers = async (req, res) => {
     const { numOfUsers } = req.body;
     const created = [];
     try {
-        // Remove all users except admin1
+        // Usuwa wszystkich użytkowników poza admin1
         await db.query("DELETE FROM users WHERE isadmin <> $1", [true]);
     } catch (err) {
         console.error("Error clearing users table:", err);

@@ -23,16 +23,16 @@ export async function runMyAlgorithm(numOfEventsPerUserInput) {
 
 function balanceAndImprove(label, prefs, minUsersMap, numOfEventsPerUser) {
   console.group(`${label} balance`);
-  // --- 1) greedy + enforce minima
+  // 1) greedy + enforce minima
   const { assignment, counts, userPrefs, eventPrefs } =
     initialBalance(prefs, minUsersMap, numOfEventsPerUser);
 
     const result1 = finalize(assignment);
   console.log(`${label} final assignment:`, result1);
-  // --- 2) lokalne przeszukiwanie 2-opt
+  // 2) lokalne przeszukiwanie 2-opt
   doTwoOptSwap(assignment, counts, userPrefs, minUsersMap);
 
-  // --- 3) finalizacja
+  // 3) finalizacja
   const result = finalize(assignment);
   console.log(`${label} final assignment:`, result);
   console.groupEnd();
@@ -100,7 +100,6 @@ function doTwoOptSwap(assignment, counts, userPrefs, minUsersMap) {
   }
 }
 
-// (reszta helperów bez zmian)
 function greedyAssign(userPrefs, numOfEventsPerUser) {
   const assignment = {}, counts = {};
   for (const [userIdStr, prefs] of Object.entries(userPrefs)) {

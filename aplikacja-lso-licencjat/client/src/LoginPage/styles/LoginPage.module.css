@@ -139,7 +139,7 @@ MEDIA QUERY
 
 */
 
-/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280+px */
+/* użyte progi szerokości (breakpointy): 0–480px, 481–768px, 769–1279px, od 1280px wzwyż */
 
 @media only screen and (max-width: 480px) {
     .login_box {

@@ -111,7 +111,7 @@ function analyseAssignment(assignmentPart, label, prefMap, executionTimeMs) {
 async function analysePreferences(algorithm, numOfEventPerUser) {
   const result = { ok: true, errorMessage: "" };
 
-  // 1) Fetch all preferences
+// 1) Pobierz wszystkie preferencje
   let prefs = [];
   try {
     const prefsRes = await fetch(
@@ -127,7 +127,7 @@ async function analysePreferences(algorithm, numOfEventPerUser) {
     return;
   }
 
-  // 2) Run the assignment algorithms and measure execution time
+// 2) Uruchom algorytmy przypisujące i zmierz czas ich wykonania
   const assignments = {};
   let ilpExecutionTime = null;
   let customExecutionTime = null;
@@ -155,14 +155,14 @@ async function analysePreferences(algorithm, numOfEventPerUser) {
     return;
   }
 
-  // 3) Prepare preference map: userId → { eventId → preference }
+// 3) Przygotuj mapę preferencji: userId → { eventId → preferencja }
   const prefMap = prefs.reduce((m, { userId, eventId, preference }) => {
     if (!m[userId]) m[userId] = {};
     m[userId][eventId] = preference;
     return m;
   }, {});
 
-  // 4) Analyze assignments for each algorithm
+// 4) Przeanalizuj przypisania dla każdego algorytmu
   try {
     if (assignments.ilp) {
       console.group("📊 ILP ALGORITHM ANALYSIS");

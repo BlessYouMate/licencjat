@@ -12,7 +12,7 @@ import algorithmsRouter from './services/algorithms.js';
 
 import { authMiddleware } from './middleware/authMiddleware.js';
 
-//Load from .env
+// Wczytuje dane z pliku .env
 dotenv.config({ path: './.env' });
 
 const app = express();

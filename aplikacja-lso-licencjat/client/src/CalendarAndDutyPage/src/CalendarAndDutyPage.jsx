@@ -51,7 +51,7 @@ export function CalendarAndDutyPage(){
 
     const [calendarView, setCalendarView] = useState(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
     const [calendarToolbar, setCalendarToolbar] = useState({});
-    const [calendarKey, setCalendarKey] = useState(true); // Key forcing re-render
+    const [calendarKey, setCalendarKey] = useState(true); // Klucz wymuszający ponowne renderowanie
 
     useEffect(() => {
         const updateView = () => {
@@ -62,10 +62,10 @@ export function CalendarAndDutyPage(){
                 setCalendarView('timeGridWeek');
                 setCalendarToolbar({ left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' });
             }
-            setCalendarKey(prevKey => !prevKey); // Forcing re-render
+            setCalendarKey(prevKey => !prevKey); // Wymuszanie ponownego renderowania
         };
 
-        updateView(); // Setting initial view
+        updateView(); // Ustawianie początkowego widoku
         window.addEventListener('resize', updateView); 
 
         return () => window.removeEventListener('resize', updateView);

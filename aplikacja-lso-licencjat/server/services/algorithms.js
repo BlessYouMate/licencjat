@@ -1,4 +1,3 @@
-// server/routes/algorithms.js
 import express from 'express';
 import { runILPAlgorithm } from './ILP/algorithm.js';
 import { runMyAlgorithm } from './myAlgorithm/algorithm.js';

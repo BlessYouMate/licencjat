@@ -6,7 +6,8 @@
     width: 100vw;
     height: 100vh;
     
-    z-index: -1; /* Ensure it's behind everything */
+    z-index: -1; /* Zapewnia, że jest za wszystkim */
+
 }
  
 
@@ -181,7 +182,8 @@ MEDIA QUERY
 
 */
 
-/* breakpoints used: 0-480px, 481-768px, 769-1279px, 1280-1625px 1625+px*/
+/* użyte progi szerokości (breakpointy): 0–480px, 481–768px, 769–1279px, 1280–1625px, powyżej 1625px */
+
 
 @media only screen and (max-width: 480px) {
     .cards{
@@ -274,7 +276,7 @@ MEDIA QUERY
 
 
 
-/* general case for landscape */
+/* ogólny przypadek dla trybu poziomego */
 
 @media only screen and (max-height: 750px) and (orientation: landscape) {
     .cards {
@@ -289,7 +291,7 @@ MEDIA QUERY
     }
 }
 
-/* general case for NOT landscape */
+/* ogólny przypadek dla trybu innego niż poziomy */
 
 @media only screen and (max-height: 750px)   {
 
